@@ -20,10 +20,10 @@
     FunctionsToExport = '*'
 
     RequiredModules = @(
-        @{ModuleName = "AzureRM.Profile"; RequiredVersion = "2.5.0"},
-        @{ModuleName = "AzureRM.Resources"; RequiredVersion = "3.5.0"},
-        @{ModuleName = "AzureRM.Network"; RequiredVersion = "3.4.0"},
-        @{ModuleName = "AzureAD"; RequiredVersion = "2.0.0.55"}
+        "AzureRM.Profile",
+        "AzureRM.Resources",
+        "AzureAD",
+        "AzureRM.Network"
     )
 
     PrivateData = @{

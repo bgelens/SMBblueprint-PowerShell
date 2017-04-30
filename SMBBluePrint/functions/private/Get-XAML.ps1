@@ -160,7 +160,7 @@ function Get-XAML {
                             <Label Margin="250,40,0,0" VerticalAlignment="Top" HorizontalAlignment="Left">.onmicrosoft.com</Label>
                         </Grid>
                     </GroupBox> -->
-                    <GroupBox Name="Grp_AConnection" Header="Microsoft Azure Connection" Height="100" VerticalAlignment="Top">
+                    <GroupBox Name="Grp_AConnection" Header="Microsoft Azure Connection" Height="120" VerticalAlignment="Top">
                         <StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label VerticalAlignment="Center" HorizontalAlignment="Left">User:</Label>
@@ -172,6 +172,10 @@ function Get-XAML {
                             <StackPanel Orientation="Horizontal">
                                 <Label VerticalAlignment="Center" HorizontalAlignment="Left">Tenant:</Label>
                                 <ComboBox Name="Cmb_Tenants" VerticalAlignment="Center" HorizontalAlignment="Left" Width="300" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                              <Label VerticalAlignment="Center" HorizontalAlignment="Left">Send Anonymous Telemetry:</Label>
+                              <CheckBox Name="telemetry" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="True"/>
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
@@ -405,6 +409,7 @@ function Get-XAML {
                                     <RowDefinition />
                                     <RowDefinition />
                                     <RowDefinition />
+                                    <RowDefinition />
                                 </Grid.RowDefinitions>
 
                                 <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">Storage Type:</Label>
@@ -423,30 +428,35 @@ function Get-XAML {
                                     <ComboBoxItem Tag="2012R2">2012R2</ComboBoxItem>
                                 </ComboBox>
 
+                                <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">Enable RDS:</Label>
+                                <ComboBox Grid.Column="2" Grid.Row="2" Name="Cmb_RDS">
+                                    <ComboBoxItem Tag="Yes" IsSelected="True">Yes</ComboBoxItem>
+                                    <ComboBoxItem Tag="No">No</ComboBoxItem>
+                                </ComboBox>
 
-                                <Label Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">Provision additional VM:</Label>
-                                <ComboBox Grid.Column="2" Grid.Row="2" Name="Cmb_ExtraVMSize">
+                                <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">Provision additional VM:</Label>
+                                <ComboBox Grid.Column="2" Grid.Row="3" Name="Cmb_ExtraVMSize">
                                     <ComboBoxItem Tag="none" IsSelected="True">No</ComboBoxItem>
                                     <ComboBoxItem Tag="small">Small</ComboBoxItem>
                                     <ComboBoxItem Tag="medium">Medium</ComboBoxItem>
                                 </ComboBox>
 
 
-                                <Label Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3">Provision SQL SaaS:</Label>
-                                <ComboBox Grid.Column="2" Grid.Row="3" Name="Cmb_ExtraSQLSize">
+                                <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3">Provision SQL SaaS:</Label>
+                                <ComboBox Grid.Column="2" Grid.Row="4" Name="Cmb_ExtraSQLSize">
                                     <ComboBoxItem Tag="none" IsSelected="True">No</ComboBoxItem>
                                     <ComboBoxItem Tag="small">Yes</ComboBoxItem>
 
                                 </ComboBox>
 
-                                <Label Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2">Provision Azure Backup Service:</Label>
-                                <ComboBox Grid.Column="2" Grid.Row="4" Name="Cmb_Backup">
+                                <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2">Provision Azure Backup Service:</Label>
+                                <ComboBox Grid.Column="2" Grid.Row="5" Name="Cmb_Backup">
                                     <ComboBoxItem Tag="none" IsSelected="True">No</ComboBoxItem>
                                     <ComboBoxItem Tag="standard">Yes</ComboBoxItem>
 
                                 </ComboBox>
-                                <Label Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2">Provision VPN:</Label>
-                                <ComboBox Grid.Column="2" Grid.Row="5" Name="Cmb_VPN">
+                                <Label Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2">Provision VPN:</Label>
+                                <ComboBox Grid.Column="2" Grid.Row="6" Name="Cmb_VPN">
                                     <ComboBoxItem Tag="none" IsSelected="True">No</ComboBoxItem>
                                     <ComboBoxItem Tag="basic">Yes</ComboBoxItem>
 

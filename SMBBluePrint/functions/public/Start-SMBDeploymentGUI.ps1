@@ -43,6 +43,8 @@ Function Start-SMBDeploymentGUI {
         Management = 'free'
         OS = '2016'
         StorageType = $null
+        RDS = "Yes"
+        DisableAnonymousTelemetry = $false
     }
     write-host "Please wait while the graphical interface is being loaded"
     #	if($Log -eq $null){
@@ -221,6 +223,10 @@ Function Start-SMBDeploymentGUI {
                                     $SyncHash.WPF_Cmb_Tenants.ItemsSource = $SyncHash.ViewModel.Tenants
 
                                     $SyncHash.WPF_Cmb_Tenants.IsDropDownOpen = $true
+                                    $SyncHash.WPF_telemetry.IsEnabled = $false
+                                    $SyncHash.WPF_Txt_LogonUser.IsEnabled = $false
+                                    $SyncHash.WPF_Txt_LogonPass.IsEnabled = $false
+                                    $SyncHash.WPF_Btn_ConnectToAzure.IsEnabled = $false
                                 }
 						
                             )
@@ -315,8 +321,16 @@ Function Start-SMBDeploymentGUI {
                     }
                     else {
                         $Command = $SyncHash.ViewModel.CommandName
-                        foreach ($Item in $SyncHash.ViewModel.CommandParameters.Keys) {
-                            $Command += " -$($Item) $($SyncHash.ViewModel.CommandParameters[$Item])"
+                        foreach($Item in $SyncHash.ViewModel.CommandParameters.Keys){
+                            if ($Item -eq 'Credential') {
+                                $Command += " -$($Item) (Get-Credential)"
+                                continue
+                            }
+                            if ($Item -eq 'NoUpdateCheck' -or $Item -eq 'DisableAnonymousTelemetry' -or $Item -eq 'AsJob') {
+                                $Command += " -$($Item)"
+                                continue
+                            }
+                            $Command += " -$($Item) '$($SyncHash.ViewModel.CommandParameters[$Item])'"
                         }
                         $Command|clip
                         invoke-message "The command has been pasted to the clipboard:`r`n$Command"
@@ -526,6 +540,10 @@ Function Start-SMBDeploymentGUI {
                     $SyncHash.ViewModel.OS = $SyncHash.WPF_Cmb_OS.SelectedItem.Tag
                     Write-Log -Message "OS set to $($SyncHash.ViewModel.OS)"
                 })
+            $SyncHash.WPF_Cmb_RDS.Add_SelectionChanged({
+                $SyncHash.ViewModel.RDS = $SyncHash.WPF_Cmb_RDS.SelectedItem.Tag
+                Write-Log -Message "RDS set to $($SyncHash.ViewModel.RDS)"
+            })
             $SyncHash.WPF_Cmb_StorageType.Add_SelectionChanged( {
                     $SyncHash.ViewModel.StorageType = $SyncHash.WPF_Cmb_StorageType.SelectedItem.Tag
                     Write-Log -Message "Storage Type set to $($SyncHash.ViewModel.StorageType)"
@@ -582,6 +600,8 @@ Function Start-SMBDeploymentGUI {
                     "Log Analytics Location: $($SyncHash.viewModel.LogAnalyticsLocation)`r`n" + 
                     "OS: $($SyncHash.viewModel.OS)`r`n" + 
                     "Storage Type: $($SyncHash.viewModel.StorageType)`r`n" + 
+                    "RDS: $($SyncHash.viewModel.RDS)`r`n" +
+                    "DisableAnonymousTelemetry: $($SyncHash.WPF_telemetry.IsChecked -eq $false)`r`n" +
                     "`r`n" + `
 				"Please note this credential for use with the solution:`r`n" + `
 				"User: sysadmin`r`n" + `
@@ -608,13 +628,16 @@ Function Start-SMBDeploymentGUI {
                             Location = $SyncHash.ViewModel.AzureLocation
                             Management = $SyncHash.ViewModel.Management
                             OS = $SyncHash.ViewModel.OS
+                            RDS=$SyncHash.ViewModel.RDS
                             StorageType = $SyncHash.ViewModel.StorageType
                             NoUpdateCheck = $true
                             AutomationLocation = $SyncHash.ViewModel.AutomationLocation
                             LogAnalyticsLocation = $SyncHash.ViewModel.LogAnalyticsLocation
 
                         }
-                       
+                        if ($SyncHash.WPF_telemetry.IsChecked -eq $false) {
+                            $DeploymentParameters.Add('DisableAnonymousTelemetry',$true)
+                        }
                         $SyncHash.ViewModel.CommandName = "New-SMBAzureDeployment"
                         $SyncHash.ViewModel.CommandParameters = $DeploymentParameters
                         $SyncHash.GUI.Dispatcher.invoke(
@@ -650,16 +673,18 @@ Function Start-SMBDeploymentGUI {
                                 }
                                 if ($SyncHash.DeploymentJob.Error) {
                                     throw $SyncHash.DeploymentJob.Error
-                                }
-                                else {
+                                } elseif ($SyncHash.ViewModel.RDS -eq 'No') {
+                                    $Status = "The solution is available!`r`n" + `
+                                                "Login: $($SyncHash.DeploymentJob.Status.Configuration.Domain)\$($SyncHash.DeploymentJob.Status.Configuration.Login)`r`n" + `
+                                                "Password: $($SyncHash.DeploymentJob.Status.Configuration.Password)"
+                                } else {
                                     $Status = "The solution is available: $($SyncHash.DeploymentJob.Status.Configuration.Connection)`r`n" + `
-								"Login: $($SyncHash.DeploymentJob.Status.Configuration.Domain)\$($SyncHash.DeploymentJob.Status.Configuration.Login)`r`n" + `
-								"Password: $($SyncHash.DeploymentJob.Status.Configuration.Password)"
-
-                                    $SyncHash.GUI.Dispatcher.invoke(
-                                        "Render",
-                                        [action] { $SyncHash.WPF_Txt_DeploymentStatus.Text = $Status })
+                                                "Login: $($SyncHash.DeploymentJob.Status.Configuration.Domain)\$($SyncHash.DeploymentJob.Status.Configuration.Login)`r`n" + `
+                                                "Password: $($SyncHash.DeploymentJob.Status.Configuration.Password)"
                                 }
+                                $SyncHash.GUI.Dispatcher.invoke(
+                                    "Render",
+                                    [action]{ $SyncHash.WPF_Txt_DeploymentStatus.Text = $Status })
 							
                             } catch {
                                 invoke-message -message "Error while deploying solution: '$_' ($($_.InvocationInfo.ScriptLineNumber) - $($_.InvocationInfo.Line))"

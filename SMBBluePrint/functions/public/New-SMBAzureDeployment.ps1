@@ -36,6 +36,9 @@ function New-SMBAzureDeployment {
         [ValidateSet('2012R2', '2016')]
         [string] $OS = '2012R2',
         [parameter()]
+        [ValidateSet('Yes','No')]
+        [string] $RDS = 'Yes',
+        [parameter()]
         [string] $SysAdminPassword = $(New-SWRandomPassword),
         [parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -61,7 +64,8 @@ function New-SMBAzureDeployment {
         [ValidateSet('Standard_LRS', "Standard_ZRS", "Standard_GRS", "Standard_RAGRS", "Premium_LRS")]
         [string] $StorageType = "Standard_LRS",
         [Parameter(DontShow = $true)]
-        [string] $InstanceId
+        [string] $InstanceId,
+        [switch] $DisableAnonymousTelemetry
     )
 	
     begin {
@@ -87,6 +91,27 @@ function New-SMBAzureDeployment {
         if (!$PSBoundParameters.ContainsKey('NoUpdateCheck')) {
             Test-ModuleVersion -ModuleName "SMBBluePrint"
         }
+
+        #region COPACO
+        $arch = ""
+        if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
+            $arch = 64
+        } else {
+            $arch = 32
+        }
+        $null = Add-Type -Path "$global:root\assemblies\$arch\Microsoft.ApplicationInsights.dll"
+        $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
+        $TelClient.InstrumentationKey = $global:TelemetryId
+        $TelClient.Context.Session.Id = $SyncHash.InstanceId
+        $TelClient.TrackEvent("New-SMBAzureDeployment started")
+        $TelClient.Flush()
+
+        if ($DisableAnonymousTelemetry) {
+            $TelClient.TrackEvent("Telemetry opt-out")
+        } else {
+            $TelClient.TrackEvent("Telemetry opt-in")
+        }
+        $TelClient.Flush()
 
         $CustomerNamePrefix = [Regex]::Replace($CustomerName, '[^a-zA-Z0-9]', '')
         $ResourceGroupName = "$ResourceGroupPrefix$CustomerNamePrefix"
@@ -241,7 +266,20 @@ function New-SMBAzureDeployment {
             logAnalyticsLocation = $LogAnalyticsLocation
             automationLocation = $AutomationLocation
             OSVersion = $OS
+            RDS = $RDS
             storageType = $StorageType
+        }
+        if (!$DisableAnonymousTelemetry) {
+            $AzureParameters.Keys | ForEach-Object {
+                if ($_ -eq 'customername') {
+                    return #anonymous
+                }
+                if ($_ -match "schedule*") {
+                    return #not usefull
+                }
+                $TelClient.TrackEvent($_ + ' - ' + $AzureParameters[$_])
+            }
+            $TelClient.Flush()
         }
         $AzureParameters.Add('adminPassword', $SecurePassword)
 		
@@ -259,6 +297,10 @@ function New-SMBAzureDeployment {
         }
         catch {
             Write-log -Type Error -Message "Error while deploying resource group: $_"
+            $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+            $TelException.Exception = $_
+            $TelClient.TrackException($TelException)
+            $TelClient.Flush()
             return $null
         }
 
@@ -313,8 +355,22 @@ function New-SMBAzureDeployment {
                 CredentialFile = "$CredentialDirectory\SBSDeployment-$($SyncHash.InstanceId).json"
             }
 
-            $null = invoke-operation -synchash $SyncHash -root $SyncHash.Root -Log $SyncHash.Log -code {
+            $null = invoke-operation -synchash $SyncHash -root $SyncHash.Root -Log $SyncHash.Log -DisableAnonymousTelemetry $DisableAnonymousTelemetry -code {
                 try {
+                    if (!$DisableAnonymousTelemetry) {
+                        $arch = ""
+                        if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
+                            $arch = 64
+                        } else {
+                            $arch = 32
+                        }
+                        $null = Add-Type -Path "$global:root\assemblies\$arch\Microsoft.ApplicationInsights.dll"
+                        $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
+                        $TelClient.InstrumentationKey = $global:TelemetryId
+                        $TelClient.Context.Session.Id = $SyncHash.InstanceId
+                        $TelClient.TrackEvent("Deployment Started")
+                        $TelClient.Flush()
+                    }
                     #$null = Select-AzureRmProfile -Path $SyncHash.DeploymentJob.CredentialFile
                     $null = Add-AzureRmAccount -Credential $SyncHash.Credential -TenantId $SyncHash.TenantId -SubscriptionId $SyncHash.SubscriptionId
                     $null = New-AzureRmResourceGroupDeployment -TemplateUri $Global:TemplateUrl `
@@ -324,15 +380,32 @@ function New-SMBAzureDeployment {
                     }
                 } catch {
                     $SyncHash.DeploymentJob.Error = $_.Exception
+                    if (!$DisableAnonymousTelemetry) {
+                        $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+                        $TelException.Exception = $_.Exception
+                        $TelClient.TrackException($TelException)
+                        $TelClient.Flush()
+                    }
                 }
 				
             }
 			
-            $null = Invoke-Operation -synchash $SyncHash -log $SyncHash.Log -root $SyncHash.Root -code {
+            $null = Invoke-Operation -synchash $SyncHash -log $SyncHash.Log -root $SyncHash.Root -DisableAnonymousTelemetry $DisableAnonymousTelemetry -code {
                 try {
                     $null = Add-AzureRmAccount -Credential $SyncHash.Credential -TenantId $SyncHash.TenantId -SubscriptionId $SyncHash.SubscriptionId
                     $DeploymentStatus = Get-AzureRmResourceGroupDeployment -ResourceGroupName $SyncHash.ResourceGroupName
-					
+					if (!$DisableAnonymousTelemetry) {
+                        $arch = ""
+                        if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
+                            $arch = 64
+                        } else {
+                            $arch = 32
+                        }
+                        $null = Add-Type -Path "$global:root\assemblies\$arch\Microsoft.ApplicationInsights.dll"
+                        $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
+                        $TelClient.InstrumentationKey = $global:TelemetryId
+                        $TelClient.Context.Session.Id = $SyncHash.InstanceId
+                    }
                     while (((($DeploymentStatus.where{$_.ProvisioningState -eq 'Running'}).count -gt 0) -or ((new-timespan -start $SyncHash.DeploymentStart -end (get-date)).TotalMinutes -lt 1)) -and ($SyncHash.DeploymentJob.Error -eq $null)) {
                         $Start = $SyncHash.DeploymentStart
                         $End = Get-Date
@@ -359,14 +432,28 @@ function New-SMBAzureDeployment {
                         }
                         $SyncHash.DeploymentJob.Status.Deployment += $Status
                     }
-					
+					if (!$DisableAnonymousTelemetry) {
+                        $TelClient.TrackEvent("Deployment finished")
+                        $TelClient.Flush()
+                    }
                 } catch {
                     $SyncHash.DeploymentJob.Error = $Error[0].ToString()
+                    if (!$DisableAnonymousTelemetry) {
+                        $TelClient.TrackEvent("Deployment failed")
+                        $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+                        $TelException.Exception = $SyncHash.DeploymentJob.Error
+                        $TelClient.TrackException($TelException)
+                        $TelClient.Flush()
+                    }
                 }
                 finally {
                     $Duration = New-TimeSpan -Start $Start -End (get-date) 
                     $SyncHash.DeploymentJob.Duration = $("{0:HH:mm:ss}" -f ([datetime]$Duration.Ticks))
                     $SyncHash.DeploymentJob.Completed = $true
+                    if (!$DisableAnonymousTelemetry) {
+                        $TelClient.TrackEvent("Deployment duration: $($SyncHash.DeploymentJob.Duration)")
+                        $TelClient.Flush()
+                    }
                 }
 
 
@@ -395,6 +482,12 @@ function New-SMBAzureDeployment {
 
             #  Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
             write-log -Type Error "Error while deploying solution: $($SyncHash.DeploymentJob.Error)."
+            if (!$DisableAnonymousTelemetry) {
+                $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+                $TelException.Exception = $SyncHash.DeploymentJob.Error
+                $TelClient.TrackException($TelException)
+                $TelClient.Flush()
+            }
         }
         finally {
             ([ref]$SyncHash.DeploymentJob).value

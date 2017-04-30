@@ -1,10 +1,11 @@
 {
     "config":{
         "TemplateURLDev":"https://raw.githubusercontent.com/Inovativ/SMBblueprint-ARM/master/azuredeploy.json",
-        "TemplateURL":"https://inovativbe.blob.core.windows.net/sbstemplatedev/azuredeploy.json",
+        "TemplateURL":"https://raw.githubusercontent.com/bgelens/SMBblueprint-ARM/copaco/azuredeploy.json",
         "ATPLicenseName":[
             "ADALLOM_O365",
             "ATP_ENTERPRISE"
-        ]
+        ],
+        "TelemetryId":"38d572a5-f7d9-4257-9928-b7f0345ee0a6"
     }
 }

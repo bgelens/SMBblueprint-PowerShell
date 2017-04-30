@@ -12,7 +12,8 @@ function Invoke-Operation {
         [string] $Root,
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
-        [string] $Log
+        [string] $Log,
+        [bool] $DisableAnonymousTelemetry
     )
     try {
         if(!$Root){
@@ -41,6 +42,7 @@ function Invoke-Operation {
         $Runspace.SessionStateProxy.SetVariable("Root",$Root)
         $Runspace.SessionStateProxy.SetVariable("SMBInstances",$global:SMBInstances)
         $Runspace.SessionStateProxy.SetVariable("InstanceId",$SyncHash.InstanceId)
+        $Runspace.SessionStateProxy.SetVariable("DisableAnonymousTelemetry",$DisableAnonymousTelemetry)
         $SyncHash.Root = $Root
         $SyncHash.Log = $Log
         [scriptblock] $_Code = {}
