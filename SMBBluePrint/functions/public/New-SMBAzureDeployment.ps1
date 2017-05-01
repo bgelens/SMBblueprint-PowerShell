@@ -92,7 +92,6 @@ function New-SMBAzureDeployment {
             Test-ModuleVersion -ModuleName "SMBBluePrint"
         }
 
-        #region COPACO
         $arch = ""
         if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
             $arch = 64

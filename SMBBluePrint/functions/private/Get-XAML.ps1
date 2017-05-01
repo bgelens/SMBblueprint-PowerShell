@@ -70,6 +70,8 @@ function Get-XAML {
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Powered By</TextBlock>
+                    <Image Name="CopacoLogo" Source="D:\OneDrive - Inovativ\Projects\Microsoft\SBS\dev\GUI\src\copaco.png" VerticalAlignment="Stretch" HorizontalAlignment="Center" Height="40" Width="100" Margin="10,0,10,0" />
+                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="0,5,0,5"/>
                     <Image Name="MicrosoftLogo" Source="D:\OneDrive - Inovativ\Projects\Microsoft\SBS\dev\GUI\src\microsoft.png" VerticalAlignment="Stretch" HorizontalAlignment="Center" Height="40" Width="100" Margin="0"  />
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="0,5,15,5" />
                     <Image Name="InovativLogo" Source="D:\OneDrive - Inovativ\Projects\Microsoft\SBS\dev\GUI\src\inovativ.png" Height="40" Width="100" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0" />
