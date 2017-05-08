@@ -88,9 +88,9 @@ function New-SMBAzureDeployment {
             $SyncHash.Log = $Log
         }
         $PSDefaultParameterValues = @{"Write-Log:Log" = $Log}
-        if (!$PSBoundParameters.ContainsKey('NoUpdateCheck')) {
-            Test-ModuleVersion -ModuleName "SMBBluePrint"
-        }
+        #if (!$PSBoundParameters.ContainsKey('NoUpdateCheck')) {
+        #    Test-ModuleVersion -ModuleName "SMBBluePrint"
+        #}
 
         $arch = ""
         if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {

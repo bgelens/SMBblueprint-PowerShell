@@ -1,8 +1,6 @@
 Function Start-SMBDeploymentGUI {
     [CmdletBinding()]
     param(
-        [Parameter()]
-        [switch] $NoUpdateCheck
     )
     $SyncHash = Get-JobVariable
     $Log = Start-Log -InstanceId $SyncHash.InstanceId
@@ -10,9 +8,6 @@ Function Start-SMBDeploymentGUI {
     # Set Module Version
     $SyncHash.ModuleVersion = (Get-Module -Name SMBBlueprint).Version.ToString()
     $PSDefaultParameterValues = @{"Write-Log:Log" = "$Log"}
-    if (!$PSBoundParameters.ContainsKey('NoUpdateCheck')) {
-        Test-ModuleVersion -ModuleName SMBBluePrint
-    }
     #$script:SyncHash = [hashtable]::Synchronized(@{})
     # Create empty view-model
     $SyncHash.ViewModel = new-object psobject -Property @{
