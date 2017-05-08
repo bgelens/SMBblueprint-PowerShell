@@ -167,9 +167,9 @@ function New-SMBAzureDeployment {
         }
         Write-Log -Message "Checking resource availability"
         $CompatibilityResults = Test-AzureResourceLocation -Location $Location -ResourceFile "$Root\resources"
-        Write-Log -Message "Incompatible resources: $($CompatibilityResults.Count)"
+        Write-Log -Message "Incompatible resources: $(($CompatibilityResults | Measure-Object).Count)"
 
-        $Count = $CompatibilityResults.Count
+        $Count = ($CompatibilityResults | Measure-Object).Count
         
         if ($Count -gt 0) {
             $Continue = $false
