@@ -451,11 +451,6 @@ function New-SMBAzureDeployment {
                 finally {
                     $Duration = New-TimeSpan -Start $Start -End (get-date) 
                     $SyncHash.DeploymentJob.Duration = $("{0:HH:mm:ss}" -f ([datetime]$Duration.Ticks))
-                    $SyncHash.DeploymentJob.Completed = $true
-                    if (!$DisableAnonymousTelemetry) {
-                        $TelClient.TrackEvent("IaaS Deployment duration: $($SyncHash.DeploymentJob.Duration)")
-                        $TelClient.Flush()
-                    }
                 }
 
 
