@@ -269,6 +269,7 @@ function New-SMBAzureDeployment {
             storageType = $StorageType
         }
         if (!$DisableAnonymousTelemetry) {
+            $AzureParametersTelemetryObject = New-Object -TypeName "System.Collections.Generic.Dictionary[[string],[System.String]]]"
             $AzureParameters.Keys | ForEach-Object {
                 if ($_ -eq 'customername') {
                     return #anonymous
@@ -276,8 +277,10 @@ function New-SMBAzureDeployment {
                 if ($_ -match "schedule*") {
                     return #not usefull
                 }
-                $TelClient.TrackEvent($_ + ' - ' + $AzureParameters[$_])
+                $AzureParametersTelemetryObject.Add($_,$AzureParameters[$_])
+                #$TelClient.TrackEvent($_ + ' - ' + $AzureParameters[$_])
             }
+            $TelClient.TrackEvent('IaaS Deployment Parameters',$AzureParametersTelemetryObject)
             $TelClient.Flush()
         }
         $AzureParameters.Add('adminPassword', $SecurePassword)
@@ -367,7 +370,7 @@ function New-SMBAzureDeployment {
                         $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
                         $TelClient.InstrumentationKey = $global:TelemetryId
                         $TelClient.Context.Session.Id = $SyncHash.InstanceId
-                        $TelClient.TrackEvent("Deployment Started")
+                        $TelClient.TrackEvent("IaaS Deployment Started")
                         $TelClient.Flush()
                     }
                     #$null = Select-AzureRmProfile -Path $SyncHash.DeploymentJob.CredentialFile
@@ -432,7 +435,7 @@ function New-SMBAzureDeployment {
                         $SyncHash.DeploymentJob.Status.Deployment += $Status
                     }
 					if (!$DisableAnonymousTelemetry) {
-                        $TelClient.TrackEvent("Deployment finished")
+                        $TelClient.TrackEvent("IaaS Deployment finished")
                         $TelClient.Flush()
                     }
                 } catch {
@@ -450,7 +453,7 @@ function New-SMBAzureDeployment {
                     $SyncHash.DeploymentJob.Duration = $("{0:HH:mm:ss}" -f ([datetime]$Duration.Ticks))
                     $SyncHash.DeploymentJob.Completed = $true
                     if (!$DisableAnonymousTelemetry) {
-                        $TelClient.TrackEvent("Deployment duration: $($SyncHash.DeploymentJob.Duration)")
+                        $TelClient.TrackEvent("IaaS Deployment duration: $($SyncHash.DeploymentJob.Duration)")
                         $TelClient.Flush()
                     }
                 }
