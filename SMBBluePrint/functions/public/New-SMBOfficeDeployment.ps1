@@ -28,7 +28,8 @@ function New-SMBOfficeDeployment {
 	[Parameter()]
 	[switch] $NoUpdateCheck,
 	[Parameter(DontShow=$true)]
-	[string] $Log
+	[string] $Log,
+    [switch] $DisableAnonymousTelemetry
 	)
 	
 	begin{
@@ -45,6 +46,31 @@ function New-SMBOfficeDeployment {
 		if(!$PSBoundParameters.ContainsKey('NoUpdateCheck')){
 		Test-ModuleVersion -ModuleName SMBBluePrint
 	}
+
+        $arch = ""
+        if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
+            $arch = 64
+        } else {
+            $arch = 32
+        }
+        $null = Add-Type -Path "$global:root\assemblies\$arch\Microsoft.ApplicationInsights.dll"
+        $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
+        $TelClient.InstrumentationKey = $global:TelemetryId
+        if ($null -ne $SyncHash) {
+            $TelClient.Context.Session.Id = $SyncHash.InstanceId
+        } else {
+            $TelClient.Context.Session.Id = [system.guid]::NewGuid().guid
+        }
+        $TelClient.TrackEvent("New-SMBOfficeDeployment started")
+        $TelClient.Flush()
+
+        if ($DisableAnonymousTelemetry) {
+            $TelClient.TrackEvent("Telemetry opt-out")
+        } else {
+            $TelClient.TrackEvent("Telemetry opt-in")
+            $TelClient.TrackEvent("O365 Deployment Started")
+        }
+        $TelClient.Flush()
 
 
 		try{
@@ -110,6 +136,13 @@ function New-SMBOfficeDeployment {
 			
 			
 		} catch {
+            if (!$DisableAnonymousTelemetry) {
+                $TelClient.TrackEvent("O365 Deployment failed")
+                $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+                $TelException.Exception = $_.Exception
+                $TelClient.TrackException($TelException)
+                $TelClient.Flush()
+            }
 			Write-Log -Type Error -Message "Error during Office 365 Connection: $_"
 			$Continue = $false
 			
@@ -237,7 +270,14 @@ function New-SMBOfficeDeployment {
 			
 
 		} catch {
-			$DeploymentJob.Error = $_
+            if (!$DisableAnonymousTelemetry) {
+                $TelClient.TrackEvent("O365 Deployment failed")
+                $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+                $TelException.Exception = $_.Exception
+                $TelClient.TrackException($TelException)
+                $TelClient.Flush()
+            }
+            $DeploymentJob.Error = $_
 			write-log -type error -message "$_ @ $($_.InvocationInfo.ScriptLineNumber) - $($_.InvocationInfo.Line))"  
 		}
 		finally{
@@ -247,6 +287,10 @@ function New-SMBOfficeDeployment {
 			$DeploymentJob.Duration = $("{0:HH:mm:ss}" -f ([datetime]$DeploymentDuration.Ticks))
 			$DeploymentJob.Completed = $true
 			([ref]$DeploymentJob).Value
+            if (!$DisableAnonymousTelemetry) {
+                $TelClient.TrackEvent("O365 Deployment finished")
+                $TelClient.Flush()
+            }
 		}
 		
 	}

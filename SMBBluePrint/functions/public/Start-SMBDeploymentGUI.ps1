@@ -330,6 +330,9 @@ Function Start-SMBDeploymentGUI {
                                 $Command += " -$($Item)"
                                 continue
                             }
+                            if ($Item -eq 'SyncHash') {
+                                continue
+                            }
                             $Command += " -$($Item) '$($SyncHash.ViewModel.CommandParameters[$Item])'"
                         }
                         $Command|clip
@@ -355,7 +358,8 @@ Function Start-SMBDeploymentGUI {
 				"Target Tenant: $(($SyncHash.ViewModel.ActiveTenant.Name))`r`n" + `
 				"Number of Groups: $($SyncHash.ViewModel.Groups.Count)`r`n" + `
 				"Number of Users: $($SyncHash.ViewModel.Users.Count)`r`n" + `
-				"Initial Password for login: $($SyncHash.ViewModel.Password)`r`n"
+				"Initial Password for login: $($SyncHash.ViewModel.Password)`r`n" + `
+                "DisableAnonymousTelemetry: $($SyncHash.WPF_telemetry.IsChecked -eq $false)`r`n"
                     [System.Windows.Forms.MessageBox]::Show($Overview, "Deployment Info")
                     [System.Windows.Forms.DialogResult] $DialogResult = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to deploy this Azure solution?", "Confirm Deployment", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Information)
                     if ($DialogResult -eq [System.Windows.Forms.DialogResult]::Yes) {
@@ -379,6 +383,9 @@ Function Start-SMBDeploymentGUI {
                             Log = $Log
                             MailDomain = $SyncHash.ViewModel.MailDomain
                             NoUpdateCheck = $true
+                        }
+                        if ($SyncHash.WPF_telemetry.IsChecked -eq $false) {
+                            $DeploymentParameters.Add('DisableAnonymousTelemetry',$true)
                         }
                         $SyncHash.ViewModel.CommandName = "New-SMBOfficeDeployment"
                         $SyncHash.ViewModel.CommandParameters = $Parameters
