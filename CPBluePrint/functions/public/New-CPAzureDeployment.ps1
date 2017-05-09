@@ -57,7 +57,7 @@ function New-CPAzureDeployment {
         [string] $SubscriptionName,
         [Parameter(DontShow = $true)]
         [ValidateNotNullOrEmpty()]
-        [string] $ResourceGroupPrefix = "smb_rg_",
+        [string] $ResourceGroupPrefix = "cp_rg_",
         [Parameter()]
         [switch] $NoUpdateCheck,
         [Parameter()]
@@ -102,7 +102,7 @@ function New-CPAzureDeployment {
         $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
         $TelClient.InstrumentationKey = $global:TelemetryId
         $TelClient.Context.Session.Id = $SyncHash.InstanceId
-        $TelClient.TrackEvent("New-SMBAzureDeployment started")
+        $TelClient.TrackEvent("New-CPAzureDeployment started")
         $TelClient.Flush()
 
         if ($DisableAnonymousTelemetry) {

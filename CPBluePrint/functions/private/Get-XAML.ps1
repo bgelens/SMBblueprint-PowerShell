@@ -40,7 +40,7 @@ function Get-XAML {
             <Grid.Background>
                 <SolidColorBrush Color="#FF0088FF" />
             </Grid.Background>
-            <TextBlock Name="Lbl_Title" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Foreground="White">SMB Deployment GUI</TextBlock>
+            <TextBlock Name="Lbl_Title" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Foreground="White">Copaco Deployment GUI</TextBlock>
             <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
                 <Button Name="CloseButton" Height="35" Width="35" HorizontalAlignment="Right" VerticalAlignment="Top" FontWeight="Bold" FontSize="14" Margin="0,0">
                     <Button.Background>
@@ -73,9 +73,6 @@ function Get-XAML {
                     <Image Name="CopacoLogo" Source="D:\OneDrive - Inovativ\Projects\Microsoft\SBS\dev\GUI\src\copaco.png" VerticalAlignment="Stretch" HorizontalAlignment="Center" Height="40" Width="100" Margin="10,0,10,0" />
                     <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="0,5,0,5"/>
                     <Image Name="MicrosoftLogo" Source="D:\OneDrive - Inovativ\Projects\Microsoft\SBS\dev\GUI\src\microsoft.png" VerticalAlignment="Stretch" HorizontalAlignment="Center" Height="40" Width="100" Margin="0"  />
-                    <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="0,5,15,5" />
-                    <Image Name="InovativLogo" Source="D:\OneDrive - Inovativ\Projects\Microsoft\SBS\dev\GUI\src\inovativ.png" Height="40" Width="100" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0" />
-
                 </StackPanel>
 
 

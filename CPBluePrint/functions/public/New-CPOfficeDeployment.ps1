@@ -61,7 +61,7 @@ function New-CPOfficeDeployment {
         } else {
             $TelClient.Context.Session.Id = [system.guid]::NewGuid().guid
         }
-        $TelClient.TrackEvent("New-SMBOfficeDeployment started")
+        $TelClient.TrackEvent("New-CPOfficeDeployment started")
         $TelClient.Flush()
 
         if ($DisableAnonymousTelemetry) {

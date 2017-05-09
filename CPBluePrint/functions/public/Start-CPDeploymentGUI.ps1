@@ -46,7 +46,7 @@ Function Start-CPDeploymentGUI {
     #		$Log = Start-Log
     #	}
 
-    $SyncHash.Module = "$global:root\SMBDeployment.psd1"
+    $SyncHash.Module = "$global:root\CPBlueprint.psd1"
     $SyncHash.XAML = (get-xaml)
 	
     $SyncHash.Root = $global:root
@@ -237,7 +237,7 @@ Function Start-CPDeploymentGUI {
                         finally {
                             $SyncHash.GUI.Dispatcher.Invoke(
                                 [action] {
-                                    $SyncHash.WPF_Lbl_Title.Text = "SMB Deployment GUI - $($SyncHash.ModuleVersion)"
+                                    $SyncHash.WPF_Lbl_Title.Text = "Copaco Deployment GUI - $($SyncHash.ModuleVersion)"
 							
                                 })
                         }
@@ -382,7 +382,7 @@ Function Start-CPDeploymentGUI {
                         if ($SyncHash.WPF_telemetry.IsChecked -eq $false) {
                             $DeploymentParameters.Add('DisableAnonymousTelemetry',$true)
                         }
-                        $SyncHash.ViewModel.CommandName = "New-SMBOfficeDeployment"
+                        $SyncHash.ViewModel.CommandName = "New-CPOfficeDeployment"
                         $SyncHash.ViewModel.CommandParameters = $Parameters
                         $job = invoke-operation -Parameters $Parameters -log $SyncHash.Log -root $SyncHash.Root -SyncHash $SyncHash -Code {
 						
@@ -390,7 +390,7 @@ Function Start-CPDeploymentGUI {
 							
                                 $job = invoke-operation -Parameters $Parameters -log $SyncHash.Log -root $SyncHash.Root -SyncHash $SyncHash -Code {
                                     try {
-                                        new-smbofficedeployment @Parameters
+                                        New-CPOfficeDeployment @Parameters
                                     } catch {
                                         write-log -type error -message "Error during Office Deployment: $_"
                                     }
@@ -563,7 +563,7 @@ Function Start-CPDeploymentGUI {
                         invoke-message "Not all parameters are provided for deployment"
                         return
                     }
-                    $SyncHash.ViewModel.Resourcegroup = "smb_rg_$($SyncHash.ViewModel.CustomerName)"
+                    $SyncHash.ViewModel.Resourcegroup = "cp_rg_$($SyncHash.ViewModel.CustomerName)"
                     Add-AzureRmAccount -Credential $SyncHash.ViewModel.AzureCredential -TenantId $SyncHash.ViewModel.ActiveTenant.Id -SubscriptionId $SyncHash.ViewModel.ActiveSubscription.Id
                     if ((($RG = Get-AzureRmResourceGroup -Name $SyncHash.ViewModel.ResourceGroup -ErrorAction SilentlyContinue)) -ne $null) {
                         Invoke-Message -Message "The target resource group $($SyncHash.ViewModel.ResourceGroup) already exists, please modify the customer prefix"
@@ -640,7 +640,7 @@ Function Start-CPDeploymentGUI {
                         if ($SyncHash.WPF_telemetry.IsChecked -eq $false) {
                             $DeploymentParameters.Add('DisableAnonymousTelemetry',$true)
                         }
-                        $SyncHash.ViewModel.CommandName = "New-SMBAzureDeployment"
+                        $SyncHash.ViewModel.CommandName = "New-CPAzureDeployment"
                         $SyncHash.ViewModel.CommandParameters = $DeploymentParameters
                         $SyncHash.GUI.Dispatcher.invoke(
                             "Render",
@@ -654,7 +654,7 @@ Function Start-CPDeploymentGUI {
                         $job = invoke-operation -synchash $SyncHash -root $SyncHash.Root -log $SyncHash.Log -code {
                             try {
 							
-                                $SyncHash.DeploymentJob = New-SMBAzureDeployment @Parameters
+                                $SyncHash.DeploymentJob = New-CPAzureDeployment @Parameters
                                 while ($SyncHash.DeploymentJob.Completed -ne $true) {
                                     $SyncHash.GUI.Dispatcher.invoke(
                                         "Render",
@@ -1038,7 +1038,7 @@ Function Start-CPDeploymentGUI {
             $SyncHash.WPF_Txt_AzurePassword.Password = $SyncHash.ViewModel.Password
             $SyncHash.GUI.Dispatcher.Invoke(
                 [action] {
-                    $SyncHash.WPF_Lbl_Title.Text = "SMB Deployment GUI - $ModuleVersion"
+                    $SyncHash.WPF_Lbl_Title.Text = "Copaco Deployment GUI - $ModuleVersion"
 							
                 })
 			

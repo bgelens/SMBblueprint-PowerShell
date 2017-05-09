@@ -2,9 +2,9 @@
 <helpItems xmlns="http://msh" schema="maml">
 
 <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-<command:details><command:name>New-SMBAzureDeployment</command:name>
+<command:details><command:name>New-CPAzureDeployment</command:name>
 <command:verb>New</command:verb>
-<command:noun>SMBAzureDeployment</command:noun>
+<command:noun>CPAzureDeployment</command:noun>
 <maml:description><maml:para>This command serves as a public interface for the Azure part of the SMB solution. It uses a set of given deployment parameters to start and monitor the ARM-based deployment in Azure.
 </maml:para>
 </maml:description>
@@ -14,7 +14,7 @@
 <maml:para>1. Connect to the target tenant's subscription 2. Verify that the naming convention is available foruse with the public DNS label and Azure resource group 3. The resource group is created based on a prefix and the customer-name 4. Initiates a new ARM-based deployment with a generated parameter-set to provision the chosen resources 5. While the deployment is occuring, the status is polled every 10 seconds and updated in the job-variable/progress 6. When the deployment is done, all connection and other deployment information is returned
 </maml:para>
 </maml:description>
-<command:syntax><command:syntaxItem><maml:name>New-SMBAzureDeployment</maml:name>
+<command:syntax><command:syntaxItem><maml:name>New-CPAzureDeployment</maml:name>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>AdditionalSQLInstanceSize</maml:name>
 <maml:Description><maml:para>Specifies the size of the Azure SQL instance to deploy. 'None' can be used to disable the deployment of this resource.
 </maml:para>
@@ -229,7 +229,7 @@
 <dev:defaultValue>None</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
-<command:syntaxItem><maml:name>New-SMBAzureDeployment</maml:name>
+<command:syntaxItem><maml:name>New-CPAzureDeployment</maml:name>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>AdditionalSQLInstanceSize</maml:name>
 <maml:Description><maml:para>Specifies the size of the Azure SQL instance to deploy. 'None' can be used to disable the deployment of this resource.
 </maml:para>
@@ -673,7 +673,7 @@
 </maml:alert>
 </maml:alertSet>
 <command:examples><command:example><maml:title>Example 1</maml:title>
-<dev:code>PS C:\&gt; New-SMBAzureDeployment -AdditionalSQLInstanceSize small -AdditionalVMSize medium -TenantDomain Contoso.com -CustomerName Contoso -CustomerSize small -SysAdminPassword MySecretP@ssword1234 -Backup standard -Credential $MyCredential -SubscriptionId 3812cde5-cb5e-42de-a673-20228eed897f -VPN basic</dev:code>
+<dev:code>PS C:\&gt; New-CPAzureDeployment -AdditionalSQLInstanceSize small -AdditionalVMSize medium -TenantDomain Contoso.com -CustomerName Contoso -CustomerSize small -SysAdminPassword MySecretP@ssword1234 -Backup standard -Credential $MyCredential -SubscriptionId 3812cde5-cb5e-42de-a673-20228eed897f -VPN basic</dev:code>
 <dev:remarks><maml:para>This example will deploy a small SMB scenario to the Contoso.com CSP tenant with the following resources: * 1 Essentials VM (small size)
 </maml:para>
 <maml:para>* 1 Additional VM (medium size)
@@ -693,9 +693,9 @@
 </command:relatedLinks>
 </command:command>
 <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-<command:details><command:name>New-SMBOfficeDeployment</command:name>
+<command:details><command:name>New-CPOfficeDeployment</command:name>
 <command:verb>New</command:verb>
-<command:noun>SMBOfficeDeployment</command:noun>
+<command:noun>CPOfficeDeployment</command:noun>
 <maml:description><maml:para>This command serves as a public interface for the O365 part of the SMB solution. It uses a set of given deployment parameters to start and monitor the user/group-deployment in O365.
 </maml:para>
 </maml:description>
@@ -703,7 +703,7 @@
 <maml:description><maml:para>This command will use a given CSV file and Tenant Information to orchestrate the provisioning of O365 users and groups. The following steps are executed: 1. Create a local admin account in the O365 subscription of the tenant to bypass some CSP restrictions regarding Groups/Onedrive provisioning 1. Parse the CSV information and alert on licensing issues 2. Create the specified users in the tenant's Azure AD, and assign the appropriate licenses 3. Create the specified Office Groups in Exchange Online (part of O365), using the local admin account 4. Populate user/group owner/membership, using the local admin account 5. Pre-provision all user's Onedrives, using the local admin account in combination with Sharepoint Online 6. Output all provisioning info
 </maml:para>
 </maml:description>
-<command:syntax><command:syntaxItem><maml:name>New-SMBOfficeDeployment</maml:name>
+<command:syntax><command:syntaxItem><maml:name>New-CPOfficeDeployment</maml:name>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Credential</maml:name>
 <maml:Description><maml:para>The CSP Partner credential to use for the deployment
 </maml:para>
@@ -797,7 +797,7 @@
 <dev:defaultValue>False</dev:defaultValue>
 </command:parameter>
 </command:syntaxItem>
-<command:syntaxItem><maml:name>New-SMBOfficeDeployment</maml:name>
+<command:syntaxItem><maml:name>New-CPOfficeDeployment</maml:name>
 <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>Credential</maml:name>
 <maml:Description><maml:para>The CSP Partner credential to use for the deployment
 </maml:para>
@@ -1024,7 +1024,7 @@
 </maml:alert>
 </maml:alertSet>
 <command:examples><command:example><maml:title>Example 1</maml:title>
-<dev:code>PS C:\&gt; New-SMBOfficeDeployment -DefaultPassword MySecretPassword -Credential $MyCredential -MailDomain contoso.com -CSV C:\SMBUsers.csv -TenantId 95e2e584-5e01-4065-bcee-8203d1005a90</dev:code>
+<dev:code>PS C:\&gt; New-CPOfficeDeployment -DefaultPassword MySecretPassword -Credential $MyCredential -MailDomain contoso.com -CSV C:\SMBUsers.csv -TenantId 95e2e584-5e01-4065-bcee-8203d1005a90</dev:code>
 <dev:remarks><maml:para>This example will use the information specified in the given CSV to provision a set of users and groups in the specified CSP tenant. The suffix '@Contoso.Com' will be used for the UPN of the users.
 </maml:para>
 </dev:remarks>
@@ -1036,9 +1036,9 @@
 </command:relatedLinks>
 </command:command>
 <command:command xmlns:maml="http://schemas.microsoft.com/maml/2004/10" xmlns:command="http://schemas.microsoft.com/maml/dev/command/2004/10" xmlns:dev="http://schemas.microsoft.com/maml/dev/2004/10" xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
-<command:details><command:name>Start-SMBDeploymentGUI</command:name>
+<command:details><command:name>Start-CPDeploymentGUI</command:name>
 <command:verb>Start</command:verb>
-<command:noun>SMBDeploymentGUI</command:noun>
+<command:noun>CPDeploymentGUI</command:noun>
 <maml:description><maml:para>Launches a grpahical interface to provide a more guided experience when using the SMB Blueprint solution
 </maml:para>
 </maml:description>
@@ -1046,7 +1046,7 @@
 <maml:description><maml:para>This command launches a GUI based on WPF XAML code, external PNG images (bundled with this module) and PS-based code-behind.
 </maml:para>
 </maml:description>
-<command:syntax><command:syntaxItem><maml:name>Start-SMBDeploymentGUI</maml:name>
+<command:syntax><command:syntaxItem><maml:name>Start-CPDeploymentGUI</maml:name>
 <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none"><maml:name>NoUpdateCheck</maml:name>
 <maml:Description><maml:para>Skips the module version check when launching the command
 </maml:para>
@@ -1086,7 +1086,7 @@
 </maml:alert>
 </maml:alertSet>
 <command:examples><command:example><maml:title>Example 1</maml:title>
-<dev:code>PS C:\&gt; Start-SMBDeploymentGUI</dev:code>
+<dev:code>PS C:\&gt; Start-CPDeploymentGUI</dev:code>
 <dev:remarks><maml:para>Launches the graphical user interface of the SMB solution
 </maml:para>
 </dev:remarks>

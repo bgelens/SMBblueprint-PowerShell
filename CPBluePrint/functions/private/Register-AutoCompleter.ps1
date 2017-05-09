@@ -11,5 +11,5 @@ function Register-AutoCompleter {
  
 }
 
-Register-AutoCompleter -CommandName New-SMBAzureDeployment -Parameter StorageType -ScriptBlock function:StorageType -Description "Azure Storage Type"
+Register-AutoCompleter -CommandName New-CPAzureDeployment -Parameter StorageType -ScriptBlock function:StorageType -Description "Azure Storage Type"
 }
