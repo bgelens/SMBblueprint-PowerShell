@@ -1,4 +1,4 @@
-Function Start-SMBDeploymentGUI {
+Function Start-CPDeploymentGUI {
     [CmdletBinding()]
     param(
     )
@@ -6,7 +6,7 @@ Function Start-SMBDeploymentGUI {
     $Log = Start-Log -InstanceId $SyncHash.InstanceId
     $SyncHash.Log = $Log
     # Set Module Version
-    $SyncHash.ModuleVersion = (Get-Module -Name SMBBlueprint).Version.ToString()
+    $SyncHash.ModuleVersion = (Get-Module -Name CPBlueprint).Version.ToString()
     $PSDefaultParameterValues = @{"Write-Log:Log" = "$Log"}
     #$script:SyncHash = [hashtable]::Synchronized(@{})
     # Create empty view-model

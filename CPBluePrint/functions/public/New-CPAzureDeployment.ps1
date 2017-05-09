@@ -1,4 +1,4 @@
-function New-SMBAzureDeployment {
+function New-CPAzureDeployment {
     [cmdletbinding(DefaultParameterSetName = "AzureTenantDomain")]
     param(
         [Parameter(Mandatory = $true)]

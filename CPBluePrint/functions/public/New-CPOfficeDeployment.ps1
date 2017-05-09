@@ -1,4 +1,4 @@
-function New-SMBOfficeDeployment {
+function New-CPOfficeDeployment {
 
 	[cmdletbinding(DefaultParameterSetName="TenantId")]
 	[OutputType([psobject])]

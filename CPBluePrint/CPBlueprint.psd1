@@ -1,6 +1,6 @@
 @{
 
-    RootModule = 'SMBBlueprint.psm1';
+    RootModule = 'CPBlueprint.psm1';
 
     ModuleVersion = '8.2.0.3';
 
