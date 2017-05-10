@@ -278,7 +278,6 @@ function New-CPAzureDeployment {
                     return #not usefull
                 }
                 $AzureParametersTelemetryObject.Add($_,$AzureParameters[$_])
-                #$TelClient.TrackEvent($_ + ' - ' + $AzureParameters[$_])
             }
             $TelClient.TrackEvent('IaaS Deployment Parameters',$AzureParametersTelemetryObject)
             $TelClient.Flush()
@@ -299,10 +298,12 @@ function New-CPAzureDeployment {
         }
         catch {
             Write-log -Type Error -Message "Error while deploying resource group: $_"
-            $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
-            $TelException.Exception = $_
-            $TelClient.TrackException($TelException)
-            $TelClient.Flush()
+            if (!$DisableAnonymousTelemetry) {
+                $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
+                $TelException.Exception = $_.Exception
+                $TelClient.TrackException($TelException)
+                $TelClient.Flush()
+            }
             return $null
         }
 
