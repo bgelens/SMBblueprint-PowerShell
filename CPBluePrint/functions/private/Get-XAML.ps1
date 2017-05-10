@@ -173,7 +173,7 @@ function Get-XAML {
                                 <ComboBox Name="Cmb_Tenants" VerticalAlignment="Center" HorizontalAlignment="Left" Width="300" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
-                              <Label VerticalAlignment="Center" HorizontalAlignment="Left">Send Anonymous Telemetry:</Label>
+                              <Label VerticalAlignment="Center" HorizontalAlignment="Left">Send Telemetry:</Label>
                               <CheckBox Name="telemetry" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="True"/>
                             </StackPanel>
                         </StackPanel>

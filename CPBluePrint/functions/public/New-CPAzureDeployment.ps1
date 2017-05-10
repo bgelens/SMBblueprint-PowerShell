@@ -65,7 +65,7 @@ function New-CPAzureDeployment {
         [string] $StorageType = "Standard_LRS",
         [Parameter(DontShow = $true)]
         [string] $InstanceId,
-        [switch] $DisableAnonymousTelemetry
+        [switch] $DisableTelemetry
     )
 	
     begin {
@@ -102,15 +102,7 @@ function New-CPAzureDeployment {
         $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
         $TelClient.InstrumentationKey = $global:TelemetryId
         $TelClient.Context.Session.Id = $SyncHash.InstanceId
-        $TelClient.TrackEvent("New-CPAzureDeployment started")
-        $TelClient.Flush()
-
-        if ($DisableAnonymousTelemetry) {
-            $TelClient.TrackEvent("Telemetry opt-out")
-        } else {
-            $TelClient.TrackEvent("Telemetry opt-in")
-        }
-        $TelClient.Flush()
+        $TelClient.Context.User.AccountId = $Credential.UserName
 
         $CustomerNamePrefix = [Regex]::Replace($CustomerName, '[^a-zA-Z0-9]', '')
         $ResourceGroupName = "$ResourceGroupPrefix$CustomerNamePrefix"
@@ -268,14 +260,14 @@ function New-CPAzureDeployment {
             RDS = $RDS
             storageType = $StorageType
         }
-        if (!$DisableAnonymousTelemetry) {
+        if (!$DisableTelemetry) {
             $AzureParametersTelemetryObject = New-Object -TypeName "System.Collections.Generic.Dictionary[[string],[System.String]]]"
             $AzureParameters.Keys | ForEach-Object {
                 if ($_ -eq 'customername') {
-                    return #anonymous
+                    return
                 }
                 if ($_ -match "schedule*") {
-                    return #not usefull
+                    return
                 }
                 $AzureParametersTelemetryObject.Add($_,$AzureParameters[$_])
             }
@@ -298,7 +290,7 @@ function New-CPAzureDeployment {
         }
         catch {
             Write-log -Type Error -Message "Error while deploying resource group: $_"
-            if (!$DisableAnonymousTelemetry) {
+            if (!$DisableTelemetry) {
                 $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
                 $TelException.Exception = $_.Exception
                 $TelClient.TrackException($TelException)
@@ -358,9 +350,9 @@ function New-CPAzureDeployment {
                 CredentialFile = "$CredentialDirectory\SBSDeployment-$($SyncHash.InstanceId).json"
             }
 
-            $null = invoke-operation -synchash $SyncHash -root $SyncHash.Root -Log $SyncHash.Log -DisableAnonymousTelemetry $DisableAnonymousTelemetry -code {
+            $null = invoke-operation -synchash $SyncHash -root $SyncHash.Root -Log $SyncHash.Log -DisableTelemetry $DisableTelemetry -code {
                 try {
-                    if (!$DisableAnonymousTelemetry) {
+                    if (!$DisableTelemetry) {
                         $arch = ""
                         if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
                             $arch = 64
@@ -371,6 +363,7 @@ function New-CPAzureDeployment {
                         $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
                         $TelClient.InstrumentationKey = $global:TelemetryId
                         $TelClient.Context.Session.Id = $SyncHash.InstanceId
+                        $TelClient.Context.User.AccountId = $SyncHash.Credential.UserName
                         $TelClient.TrackEvent("IaaS Deployment Started")
                         $TelClient.Flush()
                     }
@@ -383,7 +376,7 @@ function New-CPAzureDeployment {
                     }
                 } catch {
                     $SyncHash.DeploymentJob.Error = $_.Exception
-                    if (!$DisableAnonymousTelemetry) {
+                    if (!$DisableTelemetry) {
                         $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
                         $TelException.Exception = $_.Exception
                         $TelClient.TrackException($TelException)
@@ -393,11 +386,11 @@ function New-CPAzureDeployment {
 				
             }
 			
-            $null = Invoke-Operation -synchash $SyncHash -log $SyncHash.Log -root $SyncHash.Root -DisableAnonymousTelemetry $DisableAnonymousTelemetry -code {
+            $null = Invoke-Operation -synchash $SyncHash -log $SyncHash.Log -root $SyncHash.Root -DisableTelemetry $DisableTelemetry -code {
                 try {
                     $null = Add-AzureRmAccount -Credential $SyncHash.Credential -TenantId $SyncHash.TenantId -SubscriptionId $SyncHash.SubscriptionId
                     $DeploymentStatus = Get-AzureRmResourceGroupDeployment -ResourceGroupName $SyncHash.ResourceGroupName
-					if (!$DisableAnonymousTelemetry) {
+					if (!$DisableTelemetry) {
                         $arch = ""
                         if ($env:PROCESSOR_ARCHITECTURE -eq "AMD64") {
                             $arch = 64
@@ -408,6 +401,7 @@ function New-CPAzureDeployment {
                         $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
                         $TelClient.InstrumentationKey = $global:TelemetryId
                         $TelClient.Context.Session.Id = $SyncHash.InstanceId
+                        $TelClient.Context.User.AccountId = $SyncHash.Credential.UserName
                     }
                     while (((($DeploymentStatus.where{$_.ProvisioningState -eq 'Running'}).count -gt 0) -or ((new-timespan -start $SyncHash.DeploymentStart -end (get-date)).TotalMinutes -lt 1)) -and ($SyncHash.DeploymentJob.Error -eq $null)) {
                         $Start = $SyncHash.DeploymentStart
@@ -435,13 +429,13 @@ function New-CPAzureDeployment {
                         }
                         $SyncHash.DeploymentJob.Status.Deployment += $Status
                     }
-					if (!$DisableAnonymousTelemetry) {
+					if (!$DisableTelemetry) {
                         $TelClient.TrackEvent("IaaS Deployment finished")
                         $TelClient.Flush()
                     }
                 } catch {
                     $SyncHash.DeploymentJob.Error = $Error[0].ToString()
-                    if (!$DisableAnonymousTelemetry) {
+                    if (!$DisableTelemetry) {
                         $TelClient.TrackEvent("Deployment failed")
                         $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
                         $TelException.Exception = $SyncHash.DeploymentJob.Error
@@ -480,7 +474,7 @@ function New-CPAzureDeployment {
 
             #  Remove-AzureRmResourceGroup -Name $ResourceGroupName -Force
             write-log -Type Error "Error while deploying solution: $($SyncHash.DeploymentJob.Error)."
-            if (!$DisableAnonymousTelemetry) {
+            if (!$DisableTelemetry) {
                 $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
                 $TelException.Exception = $SyncHash.DeploymentJob.Error
                 $TelClient.TrackException($TelException)

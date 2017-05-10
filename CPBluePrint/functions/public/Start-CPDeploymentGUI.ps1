@@ -39,7 +39,7 @@ Function Start-CPDeploymentGUI {
         OS = '2016'
         StorageType = $null
         RDS = "Yes"
-        DisableAnonymousTelemetry = $false
+        DisableTelemetry = $false
     }
     write-host "Please wait while the graphical interface is being loaded"
     #	if($Log -eq $null){
@@ -321,7 +321,7 @@ Function Start-CPDeploymentGUI {
                                 $Command += " -$($Item) (Get-Credential)"
                                 continue
                             }
-                            if ($Item -eq 'NoUpdateCheck' -or $Item -eq 'DisableAnonymousTelemetry' -or $Item -eq 'AsJob') {
+                            if ($Item -eq 'NoUpdateCheck' -or $Item -eq 'DisableTelemetry' -or $Item -eq 'AsJob') {
                                 $Command += " -$($Item)"
                                 continue
                             }
@@ -354,7 +354,7 @@ Function Start-CPDeploymentGUI {
 				"Number of Groups: $($SyncHash.ViewModel.Groups.Count)`r`n" + `
 				"Number of Users: $($SyncHash.ViewModel.Users.Count)`r`n" + `
 				"Initial Password for login: $($SyncHash.ViewModel.Password)`r`n" + `
-                "DisableAnonymousTelemetry: $($SyncHash.WPF_telemetry.IsChecked -eq $false)`r`n"
+                "DisableTelemetry: $($SyncHash.WPF_telemetry.IsChecked -eq $false)`r`n"
                     [System.Windows.Forms.MessageBox]::Show($Overview, "Deployment Info")
                     [System.Windows.Forms.DialogResult] $DialogResult = [System.Windows.Forms.MessageBox]::Show("Are you sure you want to deploy this Azure solution?", "Confirm Deployment", [System.Windows.Forms.MessageBoxButtons]::YesNo, [System.Windows.Forms.MessageBoxIcon]::Information)
                     if ($DialogResult -eq [System.Windows.Forms.DialogResult]::Yes) {
@@ -380,7 +380,7 @@ Function Start-CPDeploymentGUI {
                             NoUpdateCheck = $true
                         }
                         if ($SyncHash.WPF_telemetry.IsChecked -eq $false) {
-                            $DeploymentParameters.Add('DisableAnonymousTelemetry',$true)
+                            $DeploymentParameters.Add('DisableTelemetry',$true)
                         }
                         $SyncHash.ViewModel.CommandName = "New-CPOfficeDeployment"
                         $SyncHash.ViewModel.CommandParameters = $Parameters
@@ -603,7 +603,7 @@ Function Start-CPDeploymentGUI {
                     "OS: $($SyncHash.viewModel.OS)`r`n" + 
                     "Storage Type: $($SyncHash.viewModel.StorageType)`r`n" + 
                     "RDS: $($SyncHash.viewModel.RDS)`r`n" +
-                    "DisableAnonymousTelemetry: $($SyncHash.WPF_telemetry.IsChecked -eq $false)`r`n" +
+                    "DisableTelemetry: $($SyncHash.WPF_telemetry.IsChecked -eq $false)`r`n" +
                     "`r`n" + `
 				"Please note this credential for use with the solution:`r`n" + `
 				"User: sysadmin`r`n" + `
@@ -638,7 +638,7 @@ Function Start-CPDeploymentGUI {
 
                         }
                         if ($SyncHash.WPF_telemetry.IsChecked -eq $false) {
-                            $DeploymentParameters.Add('DisableAnonymousTelemetry',$true)
+                            $DeploymentParameters.Add('DisableTelemetry',$true)
                         }
                         $SyncHash.ViewModel.CommandName = "New-CPAzureDeployment"
                         $SyncHash.ViewModel.CommandParameters = $DeploymentParameters

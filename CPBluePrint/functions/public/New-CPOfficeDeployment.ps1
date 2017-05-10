@@ -29,7 +29,7 @@ function New-CPOfficeDeployment {
 	[switch] $NoUpdateCheck,
 	[Parameter(DontShow=$true)]
 	[string] $Log,
-    [switch] $DisableAnonymousTelemetry
+    [switch] $DisableTelemetry
 	)
 	
 	begin{
@@ -56,22 +56,17 @@ function New-CPOfficeDeployment {
         $null = Add-Type -Path "$global:root\assemblies\$arch\Microsoft.ApplicationInsights.dll"
         $TelClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"
         $TelClient.InstrumentationKey = $global:TelemetryId
+        $TelClient.Context.User.AccountId = $Credential.UserName
         if ($null -ne $SyncHash) {
             $TelClient.Context.Session.Id = $SyncHash.InstanceId
         } else {
             $TelClient.Context.Session.Id = [system.guid]::NewGuid().guid
         }
-        $TelClient.TrackEvent("New-CPOfficeDeployment started")
-        $TelClient.Flush()
 
-        if ($DisableAnonymousTelemetry) {
-            $TelClient.TrackEvent("Telemetry opt-out")
-        } else {
-            $TelClient.TrackEvent("Telemetry opt-in")
+        if (!$DisableTelemetry) {
             $TelClient.TrackEvent("O365 Deployment Started")
+            $TelClient.Flush()
         }
-        $TelClient.Flush()
-
 
 		try{
 			if((Test-AADPasswordComplexity -MinimumLength 8 -Password $DefaultPassword) -eq $false){
@@ -136,7 +131,7 @@ function New-CPOfficeDeployment {
 			
 			
 		} catch {
-            if (!$DisableAnonymousTelemetry) {
+            if (!$DisableTelemetry) {
                 $TelClient.TrackEvent("O365 Deployment failed")
                 $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
                 $TelException.Exception = $_.Exception
@@ -270,7 +265,7 @@ function New-CPOfficeDeployment {
 			
 
 		} catch {
-            if (!$DisableAnonymousTelemetry) {
+            if (!$DisableTelemetry) {
                 $TelClient.TrackEvent("O365 Deployment failed")
                 $TelException = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
                 $TelException.Exception = $_.Exception
@@ -287,7 +282,7 @@ function New-CPOfficeDeployment {
 			$DeploymentJob.Duration = $("{0:HH:mm:ss}" -f ([datetime]$DeploymentDuration.Ticks))
 			$DeploymentJob.Completed = $true
 			([ref]$DeploymentJob).Value
-            if (!$DisableAnonymousTelemetry) {
+            if (!$DisableTelemetry) {
                 $TelClient.TrackEvent("O365 Deployment finished")
                 $TelClient.Flush()
             }
