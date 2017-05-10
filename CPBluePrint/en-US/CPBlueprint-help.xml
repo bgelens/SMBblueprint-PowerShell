@@ -293,6 +293,17 @@
                     </dev:type>
                     <dev:defaultValue>None</dev:defaultValue>
                 </command:parameter>
+                <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+                    <maml:name>DisableAnonymousTelemetry</maml:name>
+                    <maml:Description>
+                        <maml:para>If you don't want to send Telemetry, use this switch</maml:para>
+                    </maml:Description>
+                    <dev:type>
+                        <maml:name>SwitchParameter</maml:name>
+                        <maml:uri />
+                    </dev:type>
+                    <dev:defaultValue>False</dev:defaultValue>
+                </command:parameter>
             </command:syntaxItem>
             <command:syntaxItem>
                 <maml:name>New-CPAzureDeployment</maml:name>
@@ -568,6 +579,17 @@
                     </dev:type>
                     <dev:defaultValue>None</dev:defaultValue>
                 </command:parameter>
+                <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+                    <maml:name>DisableAnonymousTelemetry</maml:name>
+                    <maml:Description>
+                        <maml:para>If you don't want to send Telemetry, use this switch</maml:para>
+                    </maml:Description>
+                    <dev:type>
+                        <maml:name>SwitchParameter</maml:name>
+                        <maml:uri />
+                    </dev:type>
+                    <dev:defaultValue>False</dev:defaultValue>
+                </command:parameter>
             </command:syntaxItem>
         </command:syntax>
         <command:parameters>
@@ -823,6 +845,18 @@
                 </dev:type>
                 <dev:defaultValue>None</dev:defaultValue>
             </command:parameter>
+            <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+                <maml:name>DisableAnonymousTelemetry</maml:name>
+                <maml:Description>
+                    <maml:para>If you don't want to send Telemetry, use this switch</maml:para>
+                </maml:Description>
+                <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+                <dev:type>
+                    <maml:name>SwitchParameter</maml:name>
+                    <maml:uri />
+                </dev:type>
+                <dev:defaultValue>False</dev:defaultValue>
+            </command:parameter>
         </command:parameters>
         <command:inputTypes>
             <command:inputType>
@@ -985,6 +1019,17 @@
                     </dev:type>
                     <dev:defaultValue>None</dev:defaultValue>
                 </command:parameter>
+                <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+                    <maml:name>DisableAnonymousTelemetry</maml:name>
+                    <maml:Description>
+                        <maml:para>If you don't want to send Telemetry, use this switch</maml:para>
+                    </maml:Description>
+                    <dev:type>
+                        <maml:name>SwitchParameter</maml:name>
+                        <maml:uri />
+                    </dev:type>
+                    <dev:defaultValue>False</dev:defaultValue>
+                </command:parameter>
             </command:syntaxItem>
             <command:syntaxItem>
                 <maml:name>New-CPOfficeDeployment</maml:name>
@@ -1079,6 +1124,17 @@
                         <maml:uri />
                     </dev:type>
                     <dev:defaultValue>None</dev:defaultValue>
+                </command:parameter>
+                <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+                    <maml:name>DisableAnonymousTelemetry</maml:name>
+                    <maml:Description>
+                        <maml:para>If you don't want to send Telemetry, use this switch</maml:para>
+                    </maml:Description>
+                    <dev:type>
+                        <maml:name>SwitchParameter</maml:name>
+                        <maml:uri />
+                    </dev:type>
+                    <dev:defaultValue>False</dev:defaultValue>
                 </command:parameter>
             </command:syntaxItem>
         </command:syntax>
@@ -1186,6 +1242,18 @@
                     <maml:uri />
                 </dev:type>
                 <dev:defaultValue>None</dev:defaultValue>
+            </command:parameter>
+            <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="named" aliases="none">
+                <maml:name>DisableAnonymousTelemetry</maml:name>
+                <maml:Description>
+                    <maml:para>If you don't want to send Telemetry, use this switch</maml:para>
+                </maml:Description>
+                <command:parameterValue required="false" variableLength="false">SwitchParameter</command:parameterValue>
+                <dev:type>
+                    <maml:name>SwitchParameter</maml:name>
+                    <maml:uri />
+                </dev:type>
+                <dev:defaultValue>False</dev:defaultValue>
             </command:parameter>
         </command:parameters>
         <command:inputTypes>
