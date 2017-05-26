@@ -17,7 +17,11 @@
 
     PowerShellVersion = '3.0';
 
-    FunctionsToExport = '*'
+    FunctionsToExport = @(
+        'New-CPAzureDeployment',
+        'New-CPOfficeDeployment',
+        'Start-CPDeploymentGUI'
+    )
 
     RequiredModules = @(
         "AzureRM.Profile",

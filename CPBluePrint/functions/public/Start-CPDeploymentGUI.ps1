@@ -563,6 +563,12 @@ Function Start-CPDeploymentGUI {
                         invoke-message "Not all parameters are provided for deployment"
                         return
                     }
+                    if (
+                        ($SyncHash.ViewModel.CustomerName.length -gt 15)
+                    ) {
+                        invoke-message "Customer Name maximum character count is 15"
+                        return
+                    }
                     $SyncHash.ViewModel.Resourcegroup = "cp_rg_$($SyncHash.ViewModel.CustomerName)"
                     Add-AzureRmAccount -Credential $SyncHash.ViewModel.AzureCredential -TenantId $SyncHash.ViewModel.ActiveTenant.Id -SubscriptionId $SyncHash.ViewModel.ActiveSubscription.Id
                     if ((($RG = Get-AzureRmResourceGroup -Name $SyncHash.ViewModel.ResourceGroup -ErrorAction SilentlyContinue)) -ne $null) {
